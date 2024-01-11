@@ -1,9 +1,11 @@
 package com.tong.config;
 
+import com.tong.interceptor.RefreshTokenInterceptor;
 import com.tong.interceptor.UserLoginInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -14,9 +16,14 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import javax.annotation.Resource;
+
 @Configuration
 @Slf4j
 public class SpringMvcConfig extends WebMvcConfigurationSupport {
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 将指定资源路径映射到指定路径
@@ -52,7 +59,13 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
      */
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
+        // token刷新拦截器
+        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
+                .addPathPatterns("/**")
+                .order(0);
+        // 登录拦截器
         registry.addInterceptor(new UserLoginInterceptor())
+                .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/user/code",
                         "/user/login",
@@ -61,6 +74,6 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
                         "/shop-type/**",
                         "/upload/**",
                         "/voucher/**"
-                );
+                ).order(1);
     }
 }

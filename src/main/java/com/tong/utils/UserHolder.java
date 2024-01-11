@@ -3,6 +3,7 @@ package com.tong.utils;
 import com.tong.pojo.dto.UserDTO;
 
 public class UserHolder {
+
     private static final ThreadLocal<UserDTO> tl = new ThreadLocal<>();
 
     public static void saveUser(UserDTO user){

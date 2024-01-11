@@ -31,24 +31,24 @@ public class UserController {
     @ApiOperation("发送手机验证码")
     public Result sendCode(@RequestParam("phone") String phone, HttpSession session) {
         log.info("发送手机验证码，phone：{}", phone);
-        userService.sendCode(phone, session);
-        return Result.ok();
+        String code = userService.sendCodeThroughRedis(phone, session);
+        return Result.ok(code);
     }
 
     @PostMapping("/login")
     @ApiOperation("短信登录")
     public Result login(@RequestBody LoginFormDTO loginFormDTO, HttpSession session) {
         log.info("短信登录，loginFormDTO：{}", loginFormDTO);
-        userService.login(loginFormDTO, session);
-        return Result.ok();
+        String token = userService.loginThroughRedis(loginFormDTO, session);
+        return Result.ok(token);
     }
 
     @PostMapping("/logout")
     @ApiOperation("退出登录")
     public Result logout() {
         log.info("退出登录");
-        // TODO 实现登出功能
-        return Result.fail("功能未完成");
+        UserHolder.removeUser();
+        return Result.ok();
     }
 
     @GetMapping("/me")

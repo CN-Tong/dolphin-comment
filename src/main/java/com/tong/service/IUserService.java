@@ -8,7 +8,11 @@ import javax.servlet.http.HttpSession;
 
 public interface IUserService extends IService<User> {
 
-    void sendCode(String phone, HttpSession session);
+    void sendCodeThroughSession(String phone, HttpSession session);
 
-    void login(LoginFormDTO loginFormDTO, HttpSession session);
+    String sendCodeThroughRedis(String phone, HttpSession session);
+
+    void loginThroughSession(LoginFormDTO loginFormDTO, HttpSession session);
+
+    String loginThroughRedis(LoginFormDTO loginFormDTO, HttpSession session);
 }
