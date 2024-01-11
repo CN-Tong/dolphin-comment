@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface IShopService extends IService<Shop> {
 
+    Shop getByIdThroughCache(Long id);
+
     Long saveShop(Shop shop);
 
     List<Shop> pageShopByType(Integer typeId, Integer pageNum);

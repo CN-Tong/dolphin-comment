@@ -25,7 +25,8 @@ public class ShopController {
     @ApiOperation("根据id查询商铺信息")
     public Result queryShopById(@PathVariable("id") Long id) {
         log.info("根据id查询商铺信息，id：{}", id);
-        return Result.ok(shopService.getById(id));
+        Shop shop = shopService.getByIdThroughCache(id);
+        return Result.ok(shop);
     }
 
     @PostMapping
