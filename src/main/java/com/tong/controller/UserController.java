@@ -6,6 +6,7 @@ import com.tong.result.Result;
 import com.tong.pojo.entity.UserInfo;
 import com.tong.service.IUserInfoService;
 import com.tong.service.IUserService;
+import com.tong.utils.UserHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -30,16 +31,16 @@ public class UserController {
     @ApiOperation("发送手机验证码")
     public Result sendCode(@RequestParam("phone") String phone, HttpSession session) {
         log.info("发送手机验证码，phone：{}", phone);
-        // TODO 发送短信验证码并保存验证码
-        return Result.fail("功能未完成");
+        userService.sendCode(phone, session);
+        return Result.ok();
     }
 
     @PostMapping("/login")
     @ApiOperation("短信登录")
     public Result login(@RequestBody LoginFormDTO loginFormDTO, HttpSession session) {
         log.info("短信登录，loginFormDTO：{}", loginFormDTO);
-        // TODO 实现登录功能
-        return Result.fail("功能未完成");
+        userService.login(loginFormDTO, session);
+        return Result.ok();
     }
 
     @PostMapping("/logout")
@@ -54,8 +55,7 @@ public class UserController {
     @ApiOperation("获取当前登录用户")
     public Result me() {
         log.info("获取当前登录用户");
-        // TODO 获取当前登录的用户并返回
-        return Result.fail("功能未完成");
+        return Result.ok(UserHolder.getUser());
     }
 
     @GetMapping("/info/{id}")

@@ -8,7 +8,7 @@ import com.tong.pojo.entity.User;
 import com.tong.mapper.BlogMapper;
 import com.tong.service.IBlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tong.utils.SystemConstants;
+import com.tong.constant.SystemConstants;
 import com.tong.utils.UserHolder;
 import org.springframework.stereotype.Service;
 

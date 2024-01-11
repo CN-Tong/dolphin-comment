@@ -5,7 +5,7 @@ import com.tong.pojo.entity.Shop;
 import com.tong.mapper.ShopMapper;
 import com.tong.service.IShopService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tong.utils.SystemConstants;
+import com.tong.constant.SystemConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,8 +1,10 @@
 package com.tong.config;
 
+import com.tong.interceptor.UserLoginInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -43,5 +45,22 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
                 .paths(PathSelectors.any())
                 .build();
         return docket;
+    }
+
+    /**
+     * 配置拦截器
+     */
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new UserLoginInterceptor())
+                .excludePathPatterns(
+                        "/user/code",
+                        "/user/login",
+                        "/blog/hot",
+                        "/shop/**",
+                        "/shop-type/**",
+                        "/upload/**",
+                        "/voucher/**"
+                );
     }
 }
