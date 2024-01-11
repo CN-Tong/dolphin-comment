@@ -1,0 +1,43 @@
+server:
+  port: 8082
+spring:
+  profiles:
+    active: dev
+  application:
+    name: dolphin-comment
+  datasource:
+    driver-class-name: ${tong.datasource.driver-class-name}
+    url: jdbc:mysql://${tong.datasource.host}:${tong.datasource.port}/${tong.datasource.database}?useSSL=false&serverTimezone=UTC
+    username: ${tong.datasource.username}
+    password: ${tong.datasource.password}
+  redis:
+    host: ${tong.redis.host}
+    port: ${tong.redis.port}
+    password: ${tong.redis.password}
+    database: ${tong.redis.database}
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 10
+        min-idle: 1
+        time-between-eviction-runs: 10s
+  jackson:
+    default-property-inclusion: non_null # JSON处理时忽略非空字段
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.tong.pojo.entity
+  global-config:
+    db-config:
+      id-type: auto
+logging:
+  level:
+    com.tong: debug
+tong:
+  huaweiobs:
+    endpoint: ${tong.huaweiobs.endpoint}
+    access-key-id: ${tong.huaweiobs.access-key-secret}
+    access-key-secret: ${tong.huaweiobs.access-key-secret}
+    bucket-name: ${tong.huaweiobs.bucket-name}
