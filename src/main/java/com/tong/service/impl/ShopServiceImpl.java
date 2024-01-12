@@ -12,9 +12,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tong.constant.SystemConstants;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IShopService {
@@ -32,15 +34,23 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             // 存在，直接返回
             return JSONUtil.toBean(shopJson, Shop.class);
         }
+        // 判断命中的是否是空值
+        if(shopJson != null){
+            // 如果是空值，返回错误信息
+            throw new BusinessException("商铺不存在！");
+        }
         // 3.不存在，根据id查询数据库
         Shop shop = getById(id);
         // 4.判断是否存在
         if(shop == null) {
-            // 不存在，抛出异常
+            // 不存在，将空值写入Redis，返回错误信息
+            stringRedisTemplate.opsForValue()
+                    .set(shopKey, "", RedisConstants.CACHE_NULL_TTL, TimeUnit.MINUTES);
             throw new BusinessException("商铺不存在！");
         }
         // 5.存在，写入Redis
-        stringRedisTemplate.opsForValue().set(shopKey, JSONUtil.toJsonStr(shop));
+        stringRedisTemplate.opsForValue()
+                .set(shopKey, JSONUtil.toJsonStr(shop), RedisConstants.CACHE_SHOP_TTL, TimeUnit.MINUTES);
         // 6.返回商铺信息
         return shop;
     }
@@ -49,6 +59,19 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     public Long saveShop(Shop shop) {
         save(shop);
         return shop.getId();
+    }
+
+    @Override
+    @Transactional
+    public void updateShop(Shop shop) {
+        Long shopId = shop.getId();
+        if(shopId == null){
+            throw new BusinessException("店铺id不能为空！");
+        }
+        // 1.更新数据库
+        updateById(shop);
+        // 2.删除缓存
+        stringRedisTemplate.delete(RedisConstants.CACHE_SHOP_KEY + shopId);
     }
 
     @Override

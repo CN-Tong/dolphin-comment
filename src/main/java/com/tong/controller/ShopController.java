@@ -41,7 +41,7 @@ public class ShopController {
     @ApiOperation("更新商铺")
     public Result updateShop(@RequestBody Shop shop) {
         log.info("更新商铺，shop：{}", shop);
-        shopService.updateById(shop);
+        shopService.updateShop(shop);
         return Result.ok();
     }
 

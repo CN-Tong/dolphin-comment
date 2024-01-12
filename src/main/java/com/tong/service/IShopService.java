@@ -11,6 +11,8 @@ public interface IShopService extends IService<Shop> {
 
     Long saveShop(Shop shop);
 
+    void updateShop(Shop shop);
+
     List<Shop> pageShopByType(Integer typeId, Integer pageNum);
 
     List<Shop> pageShopByName(String name, Integer pageNum);
