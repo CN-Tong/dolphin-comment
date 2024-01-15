@@ -22,6 +22,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         save(voucher);
         // 保存秒杀信息
         SeckillVoucher seckillVoucher = BeanUtil.copyProperties(voucher, SeckillVoucher.class);
+        seckillVoucher.setVoucherId(voucher.getId());
         Db.save(seckillVoucher);
     }
 
@@ -30,6 +31,15 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         List<Voucher> voucherList = lambdaQuery()
                 .eq(Voucher::getShopId, shopId)
                 .list();
+        voucherList.forEach(voucher -> {
+            Long voucherId = voucher.getId();
+            SeckillVoucher seckillVoucher = Db.lambdaQuery(SeckillVoucher.class)
+                    .eq(SeckillVoucher::getVoucherId, voucherId)
+                    .one();
+            if(seckillVoucher != null){
+                BeanUtil.copyProperties(seckillVoucher, voucher);
+            }
+        });
         return voucherList;
     }
 }

@@ -65,19 +65,19 @@ public class Voucher implements Serializable {
      * 库存
      */
     @TableField(exist = false)
-    private Integer stock;
+    private Integer stock = 0;
 
     /**
      * 生效时间
      */
     @TableField(exist = false)
-    private LocalDateTime beginTime;
+    private LocalDateTime beginTime = LocalDateTime.now().minusHours(1);
 
     /**
      * 失效时间
      */
     @TableField(exist = false)
-    private LocalDateTime endTime;
+    private LocalDateTime endTime = LocalDateTime.now().plusHours(1);
 
     /**
      * 创建时间
