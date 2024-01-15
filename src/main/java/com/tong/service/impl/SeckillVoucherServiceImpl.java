@@ -41,6 +41,7 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
         // 5.扣减库存
         lambdaUpdate()
                 .eq(SeckillVoucher::getVoucherId, voucherId)
+                .gt(SeckillVoucher::getStock, 0)
                 .setSql("stock = stock - 1")
                 .update();
         // 6.创建订单
