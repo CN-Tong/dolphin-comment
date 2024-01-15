@@ -62,21 +62,21 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
         // token刷新拦截器
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
                 .addPathPatterns(
-                        "/user",
-                        "/blog",
-                        "/blog-comments",
-                        "/follow",
-                        "/voucher-order"
+                        "/user/**",
+                        "/blog/**",
+                        "/blog-comments/**",
+                        "/follow/**",
+                        "/voucher-order/**"
                 )
                 .order(0);
         // 登录拦截器
         registry.addInterceptor(new UserLoginInterceptor())
                 .addPathPatterns(
-                        "/user",
-                        "/blog",
-                        "/blog-comments",
-                        "/follow",
-                        "/voucher-order"
+                        "/user/**",
+                        "/blog/**",
+                        "/blog-comments/**",
+                        "/follow/**",
+                        "/voucher-order/**"
                 )
                 .excludePathPatterns(
                         "/user/code",
