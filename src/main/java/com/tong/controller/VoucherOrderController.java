@@ -3,6 +3,7 @@ package com.tong.controller;
 
 import com.tong.result.Result;
 import com.tong.service.ISeckillVoucherService;
+import com.tong.service.IVoucherOrderService;
 import com.tong.service.IVoucherService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class VoucherOrderController {
 
     @Autowired
-    private ISeckillVoucherService voucherOrderService;
+    private IVoucherOrderService voucherOrderService;
 
     @PostMapping("seckill/{id}")
     @ApiOperation("秒杀优惠券下单")

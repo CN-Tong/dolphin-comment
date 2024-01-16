@@ -5,4 +5,7 @@ import com.tong.pojo.entity.VoucherOrder;
 
 public interface IVoucherOrderService extends IService<VoucherOrder> {
 
+    Long seckillVoucherById(Long voucherId);
+
+    Long createVoucherOrder(Long voucherId);
 }
