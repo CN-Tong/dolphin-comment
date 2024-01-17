@@ -8,12 +8,15 @@ import com.tong.pojo.entity.SeckillVoucher;
 import com.tong.pojo.entity.VoucherOrder;
 import com.tong.service.IVoucherOrderService;
 import com.tong.utils.RedisIdWorker;
+import com.tong.utils.SimpleRedisLock;
 import com.tong.utils.UserHolder;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
 @Service
@@ -21,6 +24,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     @Autowired
     private RedisIdWorker redisIdWorker;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public Long seckillVoucherById(Long voucherId) {
@@ -40,11 +45,20 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         }
         // 创建优惠券订单
         Long userId = UserHolder.getUser().getId();
-        // 给userId加锁，为了避免new String对象带来的麻烦，锁的应该是userId对应常量池中的内容
-        synchronized (userId.toString().intern()) {
+        // 创建分布式锁对象
+        SimpleRedisLock lock = new SimpleRedisLock(stringRedisTemplate, "order:" + userId);
+        // 尝试获取锁
+        boolean isLock = lock.tryLock(5);
+        if (!isLock) {
+            // 获取锁失败
+            throw new BusinessException("请勿重复下单");
+        }
+        try {
             // 通过代理对象调用方法，以使事务生效，而非通过impl对象本身调用该方法
             IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
             return proxy.createVoucherOrder(voucherId);
+        } finally {
+            lock.unlock();
         }
     }
 
