@@ -50,14 +50,31 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
                 .page(page);
         List<Blog> records = p.getRecords();
         // 补充冗余字段 icon name
-        records.forEach(blog -> {
-            Long userId = blog.getUserId();
-            User user = Db.lambdaQuery(User.class)
-                    .eq(User::getId, userId)
-                    .one();
-            blog.setIcon(user.getIcon());
-            blog.setName(user.getNickName());
-        });
+        records.forEach(this::queryBlogUser);
         return records;
+    }
+
+    @Override
+    public Blog queryBlogById(Long id) {
+        // 查询blog
+        Blog blog = getById(id);
+        if(blog == null){
+            throw new RuntimeException("评论不存在!");
+        }
+        // 查询blog有关的用户
+        queryBlogUser(blog);
+        return blog;
+    }
+
+    /**
+     * 补充冗余字段 icon name
+     */
+    private void queryBlogUser(Blog blog) {
+        Long userId = blog.getUserId();
+        User user = Db.lambdaQuery(User.class)
+                .eq(User::getId, userId)
+                .one();
+        blog.setIcon(user.getIcon());
+        blog.setName(user.getNickName());
     }
 }

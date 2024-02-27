@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/blog")
-@Api(tags = "博客相关接口")
+@Api(tags = "评论相关接口")
 @Slf4j
 public class BlogController {
 
@@ -25,7 +25,7 @@ public class BlogController {
     private IUserService userService;
 
     @PostMapping
-    @ApiOperation("新增博客")
+    @ApiOperation("发布探店评论")
     public Result saveBlog(@RequestBody Blog blog) {
         log.info("新增博客，blog：{}", blog);
         Long blogId = blogService.saveBlog(blog);
@@ -33,7 +33,7 @@ public class BlogController {
     }
 
     @PutMapping("/like/{id}")
-    @ApiOperation("点赞博客")
+    @ApiOperation("点赞探店评论")
     public Result likeBlog(@PathVariable("id") Long id) {
         log.info("点赞博客，id：{}", id);
         blogService.likeBlogById(id);
@@ -41,7 +41,7 @@ public class BlogController {
     }
 
     @GetMapping("/of/me")
-    @ApiOperation("分页查询我的博客")
+    @ApiOperation("分页查询我的探店评论")
     public Result queryMyBlog(@RequestParam(value = "current", defaultValue = "1") Integer pageNum) {
         log.info("分页查询我的博客，pageNum：{}", pageNum);
         List<Blog> records = blogService.pageMyBlog(pageNum);
@@ -49,10 +49,18 @@ public class BlogController {
     }
 
     @GetMapping("/hot")
-    @ApiOperation("分页查询热点博客")
+    @ApiOperation("分页查询热点探店评论")
     public Result queryHotBlog(@RequestParam(value = "current", defaultValue = "1") Integer pageNum) {
         log.info("分页查询热点博客，pageNum：{}", pageNum);
         List<Blog> records = blogService.pageHotBlog(pageNum);
         return Result.ok(records);
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询探店评论详情")
+    public Result queryBlogById(@PathVariable("id") Long id){
+        log.info("根据id查询探店评论详情，id：{}", id);
+        Blog blog = blogService.queryBlogById(id);
+        return Result.ok(blog);
     }
 }

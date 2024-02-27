@@ -14,4 +14,6 @@ public interface IBlogService extends IService<Blog> {
     List<Blog> pageMyBlog(Integer pageNum);
 
     List<Blog> pageHotBlog(Integer pageNum);
+
+    Blog queryBlogById(Long id);
 }
