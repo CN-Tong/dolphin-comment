@@ -10,6 +10,8 @@ import com.tong.service.IVoucherOrderService;
 import com.tong.utils.RedisIdWorker;
 import com.tong.utils.SimpleRedisLock;
 import com.tong.utils.UserHolder;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, VoucherOrder> implements IVoucherOrderService {
@@ -26,6 +29,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private RedisIdWorker redisIdWorker;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private RedissonClient redissonClient;
 
     @Override
     public Long seckillVoucherById(Long voucherId) {
@@ -46,9 +51,13 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // 创建优惠券订单
         Long userId = UserHolder.getUser().getId();
         // 创建分布式锁对象
-        SimpleRedisLock lock = new SimpleRedisLock(stringRedisTemplate, "order:" + userId);
+        // SimpleRedisLock lock = new SimpleRedisLock(stringRedisTemplate, "order:" + userId);
+        // 通过Redisson创建锁对象
+        RLock lock = redissonClient.getLock("lock:order:" + userId);
         // 尝试获取锁
-        boolean isLock = lock.tryLock(100);
+        // boolean isLock = lock.tryLock(100);
+        // 通过Redisson尝试获取锁
+        boolean isLock = lock.tryLock();
         if (!isLock) {
             // 获取锁失败
             throw new BusinessException("请勿重复下单");
