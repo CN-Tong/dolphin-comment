@@ -48,7 +48,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // 创建分布式锁对象
         SimpleRedisLock lock = new SimpleRedisLock(stringRedisTemplate, "order:" + userId);
         // 尝试获取锁
-        boolean isLock = lock.tryLock(5);
+        boolean isLock = lock.tryLock(100);
         if (!isLock) {
             // 获取锁失败
             throw new BusinessException("请勿重复下单");
