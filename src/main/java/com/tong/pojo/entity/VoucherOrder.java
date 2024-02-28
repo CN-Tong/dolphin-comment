@@ -1,6 +1,7 @@
 package com.tong.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -46,27 +47,32 @@ public class VoucherOrder implements Serializable {
      * 下单时间
      */
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     /**
      * 支付时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime payTime;
 
     /**
      * 核销时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime useTime;
 
     /**
      * 退款时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime refundTime;
 
     /**
      * 更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
 

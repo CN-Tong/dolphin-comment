@@ -1,6 +1,8 @@
 package com.tong.controller;
 
 
+import com.tong.pojo.dto.UserDTO;
+import com.tong.pojo.entity.User;
 import com.tong.result.Result;
 import com.tong.pojo.entity.Blog;
 import com.tong.service.IBlogService;
@@ -62,5 +64,13 @@ public class BlogController {
         log.info("根据id查询探店评论详情，id：{}", id);
         Blog blog = blogService.queryBlogById(id);
         return Result.ok(blog);
+    }
+
+    @GetMapping("/likes/{id}")
+    @ApiOperation(("查询点赞排行榜"))
+    public Result queryBlogLikes(@PathVariable("id") Long id){
+        log.info("查询点赞排行榜，id：{}", id);
+        List<UserDTO> userDTOList = blogService.queryBlogLikes(id);
+        return Result.ok(userDTOList);
     }
 }

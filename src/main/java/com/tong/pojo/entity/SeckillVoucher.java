@@ -1,6 +1,7 @@
 package com.tong.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -36,17 +37,20 @@ public class SeckillVoucher implements Serializable {
     /**
      * 生效时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginTime;
 
     /**
      * 失效时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     /**
      * 更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
 
