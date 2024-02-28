@@ -1,5 +1,6 @@
 package com.tong.service.impl;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.tong.pojo.dto.UserDTO;
@@ -10,12 +11,17 @@ import com.tong.service.IBlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tong.constant.SystemConstants;
 import com.tong.utils.UserHolder;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IBlogService {
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public Long saveBlog(Blog blog) {
@@ -27,9 +33,27 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
 
     @Override
     public void likeBlogById(Long id) {
-        update().setSql("liked = liked + 1")
-                .eq("id", id)
-                .update();
+        // 1.判断当前登录用户是否已经点赞
+        Long userId = UserHolder.getUser().getId();
+        String key = "blog:liked:"+id;
+        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key, userId.toString());
+        if(BooleanUtil.isFalse(isMember)){
+            // 2.如果未点赞，可以点赞，数据库点赞数+1，保存到Redis
+            boolean isSuccess = update().setSql("liked = liked + 1")
+                    .eq("id", id)
+                    .update();
+            if(isSuccess){
+                stringRedisTemplate.opsForSet().add(key, userId.toString());
+            }
+        }else {
+            // 3.如果已点赞，取消点赞，数据库点赞数-1，从Redis中删除
+            boolean isSuccess = update().setSql("liked = liked - 1")
+                    .eq("id", id)
+                    .update();
+            if(isSuccess){
+                stringRedisTemplate.opsForSet().remove(key, userId.toString());
+            }
+        }
     }
 
     @Override
@@ -49,8 +73,11 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
                 .orderByDesc(Blog::getLiked)
                 .page(page);
         List<Blog> records = p.getRecords();
-        // 补充冗余字段 icon name
-        records.forEach(this::queryBlogUser);
+        // 补充冗余字段 icon name isLike
+        records.forEach(blog -> {
+            this.queryBlogUser(blog);
+            this.isBlogLiked(blog);
+        });
         return records;
     }
 
@@ -63,7 +90,19 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         }
         // 查询blog有关的用户
         queryBlogUser(blog);
+        // 查询blog是否被点赞，并保存至blog的isLike属性
+        isBlogLiked(blog);
         return blog;
+    }
+
+    /**
+     * 查询blog是否被点赞，并保存至blog的isLike属性
+     */
+    private void isBlogLiked(Blog blog) {
+        Long userId = UserHolder.getUser().getId();
+        String key = "blog:liked:"+blog.getId();
+        Boolean isMember = stringRedisTemplate.opsForSet().isMember(key, userId.toString());
+        blog.setIsLike(BooleanUtil.isTrue(isMember));
     }
 
     /**
