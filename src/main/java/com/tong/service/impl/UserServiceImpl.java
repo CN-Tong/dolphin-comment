@@ -132,6 +132,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return token;
     }
 
+    @Override
+    public UserDTO getUserById(Long id) {
+        User user = getById(id);
+        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+        return userDTO;
+    }
+
     private User createUserWithPhone(String phone) {
         User user = new User();
         user.setPhone(phone);

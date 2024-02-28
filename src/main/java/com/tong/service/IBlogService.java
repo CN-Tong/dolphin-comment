@@ -20,4 +20,6 @@ public interface IBlogService extends IService<Blog> {
     Blog queryBlogById(Long id);
 
     List<UserDTO> queryBlogLikes(Long id);
+
+    List<Blog> pageUserBlogs(Long id, Integer current);
 }

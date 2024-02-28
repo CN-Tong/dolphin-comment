@@ -73,4 +73,13 @@ public class BlogController {
         List<UserDTO> userDTOList = blogService.queryBlogLikes(id);
         return Result.ok(userDTOList);
     }
+
+    @GetMapping("/of/user")
+    @ApiOperation("分页查询用户的博客")
+    public Result pageUserBlogs(@RequestParam("id") Long id,
+                                 @RequestParam(value = "current", defaultValue = "1") Integer current){
+        log.info("分页查询用户的博客");
+        List<Blog> blogList = blogService.pageUserBlogs(id, current);
+        return Result.ok(blogList);
+    }
 }

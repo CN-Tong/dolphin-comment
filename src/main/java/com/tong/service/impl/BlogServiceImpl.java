@@ -129,6 +129,14 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         return userDTOList;
     }
 
+    @Override
+    public List<Blog> pageUserBlogs(Long id, Integer current) {
+        Page<Blog> p = lambdaQuery()
+                .eq(Blog::getUserId, id)
+                .page(new Page<Blog>(current, SystemConstants.MAX_PAGE_SIZE));
+        return p.getRecords();
+    }
+
     /**
      * 查询blog是否被点赞，并保存至blog的isLike属性
      */

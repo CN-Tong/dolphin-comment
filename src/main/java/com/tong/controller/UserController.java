@@ -2,6 +2,7 @@ package com.tong.controller;
 
 
 import com.tong.pojo.dto.LoginFormDTO;
+import com.tong.pojo.dto.UserDTO;
 import com.tong.result.Result;
 import com.tong.pojo.entity.UserInfo;
 import com.tong.service.IUserInfoService;
@@ -64,5 +65,13 @@ public class UserController {
         log.info("根据用户id获取用户信息，userId：{}", userId);
         UserInfo info = userInfoService.getInfoByUserId(userId);
         return Result.ok(info);
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询用户")
+    public Result getUserById(@PathVariable("id") Long id){
+        log.info("根据id查询用户，id：{}", id);
+        UserDTO userDTO = userService.getUserById(id);
+        return Result.ok(userDTO);
     }
 }

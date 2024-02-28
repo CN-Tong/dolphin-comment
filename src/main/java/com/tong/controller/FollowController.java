@@ -1,6 +1,7 @@
 package com.tong.controller;
 
 
+import com.tong.pojo.dto.UserDTO;
 import com.tong.result.Result;
 import com.tong.service.IFollowService;
 import io.swagger.annotations.Api;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/follow")
@@ -33,5 +35,13 @@ public class FollowController {
         log.info("尝试关注/取关，followUserId：{}", followUserId);
         boolean isFollow = followService.isFollow(followUserId);
         return Result.ok(isFollow);
+    }
+
+    @GetMapping("/common/{id}")
+    @ApiOperation("查询共同关注的用户")
+    public Result commonFollow(@PathVariable("id") Long id){
+        log.info("查询共同关注的用户，目标用户id：{}", id);
+        List<UserDTO> userDTOList = followService.commonFollow(id);
+        return Result.ok(userDTOList);
     }
 }
