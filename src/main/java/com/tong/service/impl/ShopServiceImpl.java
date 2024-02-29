@@ -33,7 +33,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     @Override
     public Shop getByIdThroughCache(Long id) {
         // 解决缓存穿透
-        // Shop shop = getByIdWithPassThrough(id);
+        Shop shop = getByIdWithPassThrough(id);
 
         // 基于互斥锁解决缓存击穿
         // Shop shop = getByIdWithMutex(id);
@@ -42,7 +42,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         // }
 
         // 基于逻辑过期解决缓存击穿
-        Shop shop = getByIdWithLogicalExpire(id);
+        // Shop shop = getByIdWithLogicalExpire(id);
         return shop;
     }
 

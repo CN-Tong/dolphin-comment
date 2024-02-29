@@ -134,7 +134,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         // 1.查询TOP5的点赞分数
         String key = BLOG_LIKED_KEY + id;
         Set<String> topIds = stringRedisTemplate.opsForZSet().range(key, 0, 4);
-        if(topIds == null){
+        if(CollUtil.isEmpty(topIds)){
             return Collections.emptyList();
         }
         // 2.解析用户id
