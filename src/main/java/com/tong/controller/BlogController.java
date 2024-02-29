@@ -5,6 +5,7 @@ import com.tong.pojo.dto.UserDTO;
 import com.tong.pojo.entity.User;
 import com.tong.result.Result;
 import com.tong.pojo.entity.Blog;
+import com.tong.result.ScrollResult;
 import com.tong.service.IBlogService;
 import com.tong.service.IUserService;
 import io.swagger.annotations.Api;
@@ -81,5 +82,15 @@ public class BlogController {
         log.info("分页查询用户的博客");
         List<Blog> blogList = blogService.pageUserBlogs(id, current);
         return Result.ok(blogList);
+    }
+
+    @GetMapping("/of/follow")
+    @ApiOperation("滚动分页查询关注的人的笔记")
+    public Result pageBlogOfFollow(@RequestParam("lastId") Long lastMinTime,
+                                   @RequestParam(value = "offset", defaultValue = "0") Integer offset){
+        log.info("滚动分页查询关注的人的笔记，上一次查询的最小时间戳：{}，" +
+                "本次查询的偏移量(上次查询最小时间戳的重复次数)：{}", lastMinTime, offset);
+        ScrollResult result = blogService.pageBlogOfFollow(lastMinTime, offset);
+        return Result.ok(result);
     }
 }

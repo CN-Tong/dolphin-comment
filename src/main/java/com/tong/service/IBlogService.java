@@ -4,6 +4,7 @@ import com.tong.pojo.dto.UserDTO;
 import com.tong.pojo.entity.Blog;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tong.pojo.entity.User;
+import com.tong.result.ScrollResult;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface IBlogService extends IService<Blog> {
     List<UserDTO> queryBlogLikes(Long id);
 
     List<Blog> pageUserBlogs(Long id, Integer current);
+
+    ScrollResult pageBlogOfFollow(Long max, Integer offset);
 }
