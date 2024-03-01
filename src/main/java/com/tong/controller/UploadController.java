@@ -23,26 +23,8 @@ public class UploadController {
     @Autowired
     private HuaweiObsUtil huaweiObsUtil;
 
-    @PostMapping("blog")
-    @ApiOperation("上传博客图片")
-    public Result uploadImage(@RequestParam("file") MultipartFile file) {
-        log.info("上传博客图片：{}", file);
-        try {
-            // 原始文件名后缀
-            String originalFilename = file.getOriginalFilename();
-            // UUID重命名
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String fileName = UUID.randomUUID() + extension;
-            // 保存文件
-            file.transferTo(new File(SystemConstants.IMAGE_UPLOAD_DIR, fileName));
-            // 返回结果
-            log.info("图片上传成功：{}", fileName);
-            return Result.ok(fileName);
-        } catch (IOException e) {
-            throw new RuntimeException("图片上传失败", e);
-        }
-    }
-
+    // @PostMapping("blog")
+    // @ApiOperation("上传博客图片至本地")
     // public Result uploadImage(@RequestParam("file") MultipartFile file) {
     //     log.info("上传博客图片：{}", file);
     //     try {
@@ -50,14 +32,34 @@ public class UploadController {
     //         String originalFilename = file.getOriginalFilename();
     //         // UUID重命名
     //         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-    //         String objectName = UUID.randomUUID() + extension;
-    //         String filePath = huaweiObsUtil.upload(objectName, file.getBytes());
-    //         return Result.ok(filePath);
+    //         String fileName = UUID.randomUUID() + extension;
+    //         // 保存文件
+    //         file.transferTo(new File(SystemConstants.IMAGE_UPLOAD_DIR, fileName));
+    //         // 返回结果
+    //         log.info("图片上传成功：{}", fileName);
+    //         return Result.ok(fileName);
     //     } catch (IOException e) {
-    //         log.error("图片上传失败：{}", e);
+    //         throw new RuntimeException("图片上传失败", e);
     //     }
-    //     return Result.fail("图片上传失败");
     // }
+
+    @PostMapping("blog")
+    @ApiOperation("上传博客图片至OBS")
+    public Result uploadImage(@RequestParam("file") MultipartFile file) {
+        log.info("上传博客图片：{}", file);
+        try {
+            // 原始文件名后缀
+            String originalFilename = file.getOriginalFilename();
+            // UUID重命名
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String objectName = UUID.randomUUID() + extension;
+            String filePath = huaweiObsUtil.upload(objectName, file.getBytes());
+            return Result.ok(filePath);
+        } catch (IOException e) {
+            log.error("图片上传失败：{}", e);
+        }
+        return Result.fail("图片上传失败");
+    }
 
     @GetMapping("/blog/delete")
     @ApiOperation("删除博客图片")
